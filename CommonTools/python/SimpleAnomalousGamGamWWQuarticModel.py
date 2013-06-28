@@ -6,8 +6,8 @@ class SimpleAnomalousGamGamWWQuarticModel(AnomalousCouplingModel):
         self.processes = ['aaWWBSM']
         self.channels  = ['emu']
         self.pois    = ['a0W','aCW']        
-        self.anomCoupSearchWindows = {'a0W':['-1.5e-5','1.5e-5'],
-                                      'aCW':['-6e-5','6e-5']     }
+        self.anomCoupSearchWindows = {'a0W':['-1e-3','1e-3'],
+                                      'aCW':['-5e-3','5e-3']     }
         
         self.verbose = False
 
