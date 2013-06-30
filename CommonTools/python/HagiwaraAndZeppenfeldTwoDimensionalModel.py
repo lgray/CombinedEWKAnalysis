@@ -19,7 +19,7 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         if 'dkg' in self.pois and 'lZ' in self.pois and 'dg1' not in self.pois:
             scalerName = '%s_%s_dkglZ'%(process,channel)
             self.modelBuilder.out.var('dg1').setVal(0)
-            self.modelBuilder.out.var('dg1').setConstant(True)            
+            self.modelBuilder.out.var('dg1').setConstant(True)         
             self.modelBuilder.factory_('RooATGCProcessScaling::Scaling_%s(dkg,lZ,dg1,ATGCpdf_%s)'%(scalerName,scalerName)
         elif ( 'dkg' in self.pois and 'dg1' in self.pois and
                'lZ' not in self.pois ):

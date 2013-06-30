@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from subprocess import Popen, PIPE
 
 conf_level = 0.95
