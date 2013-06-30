@@ -16,6 +16,7 @@ def find_limit(value,clevel):
                         '--testStat','PL',
                         '--rule','CLsplusb',
                         '--toysH','500',
+                        '--clsAcc','0.002',                        
                         '--singlePoint','a0W=0,aCW=%e'%value]
         
         result = Popen(combine_args,stdout=PIPE,stderr=PIPE).communicate()[0]
@@ -40,7 +41,8 @@ def get_intervals(lower,guess,upper,conf_level):
     diff_lo_gs = abs(lo_and_err[0] - gs_and_err[0])
     diff_up_gs = abs(up_and_err[0] - gs_and_err[0])
     print diff_lo_gs, diff_up_gs, avg_err
-    if diff_lo_gs < avg_err and diff_up_gs < avg_err:
+    if ( diff_lo_gs < avg_err and diff_up_gs < avg_err and
+         lo_inc and gs_inc and up_inc ):
         return guess
     else:
         # neither of regions left of upper contain the limit
@@ -63,6 +65,30 @@ def get_intervals(lower,guess,upper,conf_level):
         if lo_inc and gs_inc and not up_inc:
             midpoint = 0.5*(upper+guess)
             return get_intervals(guess,midpoint,upper,conf_level)
+        # there are no points which are inside the limits
+        # fork into two!
+        if not lo_inc and not gs_inc and not up_inc:
+            midpoint_up = 0.5*(upper+guess)
+            midpoint_lo = 0.5*(lower+guess)
+            val_up = get_intervals(guess,midpoint_up,upper,conf_level)
+            val_lo = get_intervals(lower,midpoint_lo,guess,conf_level)
+            return [val_lo,val_up]
+        # there are the middle is in and the endpoints are out
+        # fork into two!
+        if not lo_inc and gs_inc and not up_inc:
+            midpoint_up = 0.5*(upper+guess)
+            midpoint_lo = 0.5*(lower+guess)
+            val_up = get_intervals(guess,midpoint_up,upper,conf_level)
+            val_lo = get_intervals(lower,midpoint_lo,guess,conf_level)
+            return [val_lo,val_up]
+        # there are the middle is in and the endpoints are out
+        # fork into two!
+        if lo_inc and not gs_inc and up_inc:
+            midpoint_up = 0.5*(upper+guess)
+            midpoint_lo = 0.5*(lower+guess)
+            val_up = get_intervals(guess,midpoint_up,upper,conf_level)
+            val_lo = get_intervals(lower,midpoint_lo,guess,conf_level)
+            return [val_lo,val_up]
         
    
 
@@ -75,6 +101,6 @@ print included
 included = find_limit(-0.000625610351562,conf_level)
 print included
 
-#result = get_intervals(lower,0.5*(0+lower),0,conf_level)
-#print result
+result = get_intervals(lower,0.5*(upper+lower),upper,conf_level)
+print result
 

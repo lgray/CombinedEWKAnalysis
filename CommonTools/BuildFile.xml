@@ -4,6 +4,4 @@
 <use name="roostats"/>
 <use name="histfactory"/>
 <use name="HiggsAnalysis/CombinedLimit"/>
-<export>
-   <lib name="1"/>
-</export>
+
