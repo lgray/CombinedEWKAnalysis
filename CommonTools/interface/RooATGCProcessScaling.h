@@ -3,16 +3,13 @@
 #ifndef ROOATGCPROCESSSCALING
 #define ROOATGCPROCESSSCALING
 
-#include "CombinedEWKAnalysis/CommonTools/interface/RooATGCFunction.h"
 #include "RooEffProd.h"
 #include "RooRealProxy.h"
 #include "RooAbsReal.h"
-#include "TProfile2D.h"
-#include "TString.h"
-
+  
 class RooATGCProcessScaling : public RooAbsReal {
 public:
-
+  
   RooATGCProcessScaling ();
   RooATGCProcessScaling (const char * name, const char * title,
 			 RooAbsReal& dkg,
@@ -23,18 +20,18 @@ public:
   virtual TObject * clone(const char * newname) const { 
     return new RooATGCProcessScaling(*this, newname);
   }
-
+  
   virtual ~RooATGCProcessScaling ();
-
+  
 protected:
   
   RooRealProxy _shapeScale;
   double SM_scale;
   
   virtual double evaluate() const;
-
+  
 private:
-
+  
   ClassDef(RooATGCProcessScaling, 1) // aTGC scaler
 };
 

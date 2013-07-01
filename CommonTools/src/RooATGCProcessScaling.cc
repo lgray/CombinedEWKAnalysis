@@ -9,13 +9,12 @@
 #include "Riostream.h" 
 
 #include "CombinedEWKAnalysis/CommonTools/interface/RooATGCProcessScaling.h" 
-
 #include <math.h> 
 #include "TMath.h" 
 
 #include "TFile.h"
 
-ClassImp(RooATGCProcessScaling) 
+ClassImpUnique(RooATGCProcessScaling,MAGICWORDOFSOMESORT) 
 
 RooATGCProcessScaling::RooATGCProcessScaling() { }
 
@@ -26,7 +25,7 @@ RooATGCProcessScaling::RooATGCProcessScaling(const char *name,
 					     RooAbsReal& dg1,
 					     RooAbsReal& shapeScale) :
    RooAbsReal(name,title),
-   _shapeScale("shapeScale","shapeScale",this,shapeScale) {
+   _shapeScale("shapeScale","shapeScale",this,shapeScale) {  
   // must make sure that before this TGCs are at the SM value
   RooAbsReal* sm_int = shapeScale.createIntegral(RooArgSet(),RooArgSet());
   SM_scale = sm_int->getVal();

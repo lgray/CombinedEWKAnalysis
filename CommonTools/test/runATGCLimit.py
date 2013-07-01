@@ -29,9 +29,13 @@ dg1 = theWS.factory('dg1[0.]')
 vars = RooArgList(wpt)
 varSet = RooArgSet(wpt)
 
-data = RooDataHist('data', 'data', vars, data_obs)
-bkgHist = RooDataHist('bkgHist', 'bkgHist', vars, background)
-dibosonHist = RooDataHist('dibosonHist', 'dibosonHist', vars, diboson)
+data = RooDataHist('data_obs', 'data_obs', vars, data_obs)
+bkgHist = RooDataHist('WV_semileptonic_bkg_mu',
+                      'WV_semileptonic_bkg_mu',
+                      vars, background)
+dibosonHist = RooDataHist('WV_atgc_semileptonic_mu',
+                          'WV_atgc_semileptonic_mu',
+                          vars, diboson)
 
 bkgPdf = RooHistPdf('bkgPdf', 'bkgPdf', varSet, bkgHist)
 dibosonPdf = RooHistPdf('dibosonPdf', 'dibosonPdf', varSet, dibosonHist)

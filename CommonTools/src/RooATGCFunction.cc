@@ -15,7 +15,7 @@
 
 #include "TFile.h"
 
-ClassImp(RooATGCFunction) 
+ClassImpUnique(RooATGCFunction,MAGICWORDOFSOMESORT) 
 
 RooATGCFunction::RooATGCFunction() : 
   P_dk(0), P_dg1(0)

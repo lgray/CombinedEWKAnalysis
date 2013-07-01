@@ -23,9 +23,9 @@ def find_limit(value,clevel):
         result = Popen(combine_args,stdout=PIPE,stderr=PIPE).communicate()[0]
         result = result.split('\n')[-3]
         result = result.split('=')[-1]
-        central_val, error = result.split('+/-')
-        central_val = float(central_val)
-        error = float(error) 
+        result = result.split('+/-')
+        central_val = float(result[0])
+        error       = float(result[1])
         val_cache[value] = [central_val,error]    
        
     print 'limit at %e: %f +/- %e'%(value,
@@ -92,16 +92,16 @@ def get_intervals(lower,guess,upper,conf_level):
             return [val_lo,val_up]
         
    
+if __name__ == '__main__':
+    included = find_limit(6.2159e-4,conf_level)
+    print included
+    
+    included = find_limit(0.000625610351562,conf_level)
+    print included
+    
+    included = find_limit(-0.000625610351562,conf_level)
+    print included
 
-included = find_limit(6.2159e-4,conf_level)
-print included
-
-included = find_limit(0.000625610351562,conf_level)
-print included
-
-included = find_limit(-0.000625610351562,conf_level)
-print included
-
-result = get_intervals(lower,0.5*(upper+lower),upper,conf_level)
-print result
+    result = get_intervals(lower,0.5*(upper+lower),upper,conf_level)
+    print result
 
