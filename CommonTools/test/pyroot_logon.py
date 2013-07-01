@@ -107,7 +107,7 @@ gStyle.SetLabelSize(0.06, "XYZ")
 gStyle.SetNdivisions(505, "XYZ")
 
 if (gSystem.DynamicPathName("libFWCoreFWLite.so",True)):
-    gSystem.Load('libCombinedEWKAnalysisCommonTools.so')
+    gSystem.Load('libHiggsAnalysisCombinedLimit')
     gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libMMozerpowhegweight.so")
     res = gSystem.Load("$CMSSW_BASE/lib/$SCRAM_ARCH/libHiggsAnalysisCombinedLimit.so")
     gROOT.GetInterpreter().AddIncludePath(cmssw_base + '/src')
