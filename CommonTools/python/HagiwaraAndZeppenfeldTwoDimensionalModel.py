@@ -1,7 +1,8 @@
 from CombinedEWKAnalysis.CommonTools.AnomalousCouplingModel import *
 import ROOT as r
+import os
 
-basepath = '/home/lgray/CMSSW_6_2_0_pre5/src/CombinedEWKAnalysis/CommonTools/data/WV_semileptonic'
+basepath = '%s/src/CombinedEWKAnalysis/CommonTools/data/WV_semileptonic'%os.environ['CMSSW_BASE']
 
 #this model is in the equal couplings scenario of HISZ or something similar
 #it does the old style limits of setting the other parameter to zero

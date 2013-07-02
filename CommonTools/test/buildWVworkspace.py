@@ -1,9 +1,10 @@
 import pyroot_logon
 import limits
+import os
 
 from ROOT import *
 
-basepath = '/home/lgray/CMSSW_6_2_0_pre5/src/CombinedEWKAnalysis/CommonTools/data/WV_semileptonic'
+basepath = '%s/src/CombinedEWKAnalysis/CommonTools/data/WV_semileptonic'%os.environ['CMSSW_BASE']
 
 f = TFile('%s/mu_boosted.root'%basepath)
 
