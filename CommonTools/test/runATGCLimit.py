@@ -19,10 +19,10 @@ wpt = theWS.factory('W_pt[%f,%f]' % (data_obs.GetBinLowEdge(1),
                                      data_obs.GetBinLowEdge(data_obs.GetNbinsX())+data_obs.GetBinWidth(data_obs.GetNbinsX())))
 wpt.setBins(data_obs.GetNbinsX())
 
-lz = theWS.factory('lZ[0., -1., 1.]')
+lz = theWS.factory('lZ[0., -0.03, 0.03]')
 # lz = theWS.factory('lZ[0.]')
 lz.setConstant(False)
-dkg = theWS.factory('dkg[0., -0.5, 0.5]')
+dkg = theWS.factory('dkg[0., -0.15, 0.15]')
 dg1 = theWS.factory('dg1[0.]')
 
 
@@ -44,7 +44,15 @@ print '%s/ATGC_shape_coefficients.root'%basepath
 
 aTGC = RooATGCFunction('aTGC', 'aTGC', wpt, lz, dkg, dg1, 
                        '%s/ATGC_shape_coefficients.root'%basepath)
-aTGCPdf = RooEffProd('aTGCPdf', 'aTGCPdf', dibosonPdf, aTGC)
+
+aTGCPdf = RooATGCSemiAnalyticPdf('aTGCPdf',
+                                 'aTGCPdf_WV_mu',
+                                 wpt,
+                                 lz,
+                                 dkg,
+                                 dg1,
+                                 dibosonPdf,
+                                 '%s/ATGC_shape_coefficients.root'%basepath)
 
 nbkg = theWS.factory('prod::bkg_yield(n_bkg[%f],bkg_nrm[1.,-1.,5.])' % \
                          (background.Integral()))
@@ -64,7 +72,7 @@ getattr(theWS, 'import')(total)
 theWS.factory('RooGaussian::bkg_const(bkg_nrm, 1.0, 0.05)')
 total_const = theWS.factory('PROD::total_const(total, bkg_const)')
 
-theWS.factory('RooATGCProcessScaling::testScale(dkg,lZ,dg1,aTGCPdf)')
+theWS.factory('RooATGCProcessScaling::testScale(W_pt,dkg,lZ,dg1,dibosonPdf,"%s/ATGC_shape_coefficients.root")'%basepath)
 
 
 

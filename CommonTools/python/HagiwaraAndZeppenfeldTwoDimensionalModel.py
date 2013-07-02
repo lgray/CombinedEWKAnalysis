@@ -3,6 +3,7 @@ import ROOT as r
 import os
 
 basepath = '%s/src/CombinedEWKAnalysis/CommonTools/data/WV_semileptonic'%os.environ['CMSSW_BASE']
+filename = '%s/ATGC_shape_coefficients.root'%basepath  
 
 #this model is in the equal couplings scenario of HISZ or something similar
 #it does the old style limits of setting the other parameter to zero
@@ -33,8 +34,7 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
             raise RuntimeError('InvalidCouplingChoice',
                                'We can only use [dkg,lZ] and [dkg,dg1]'\
                                ' as POIs right now!')
-
-        filename = '%s/ATGC_shape_coefficients.root'%basepath        
+              
         f = r.TFile('%s/mu_boosted.root'%basepath,'READ')
         SM_diboson_shape = f.Get('diboson').Clone('SM_wv_semil_mu_shape_for_scale')
         SM_diboson_shape.SetDirectory(0)
@@ -45,10 +45,8 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
                     r.RooArgList(self.modelBuilder.out.var('W_pt')),
                     self.modelBuilder.out.obj('SM_wv_semil_mu_shape_for_scale'))
         self.modelBuilder.out._import(SM_diboson_shape_dhist)        
-        self.modelBuilder.factory_('RooHistPdf::Scaling_base_pdf_%s({W_pt},DHIST_SM_wv_semil_mu_shape_for_scale)'%(scalerName))
-        self.modelBuilder.factory_('RooATGCFunction::Scaling_base_function_%s(W_pt,lZ,dkg,dg1,"%s")'%(scalerName,filename))
-        self.modelBuilder.factory_('RooEffProd::Scaling_pdf_%s(Scaling_base_pdf_%s,Scaling_base_function_%s)'%(scalerName,scalerName,scalerName))
-        self.modelBuilder.factory_('RooATGCProcessScaling::Scaling_%s(dkg,lZ,dg1,Scaling_pdf_%s)'%(scalerName,scalerName))
+        self.modelBuilder.factory_('RooHistPdf::Scaling_base_pdf_%s({W_pt},DHIST_SM_wv_semil_mu_shape_for_scale)'%(scalerName))              
+        self.modelBuilder.factory_('RooATGCProcessScaling::Scaling_%s(W_pt,dkg,lZ,dg1,Scaling_base_pdf_%s,"%s")'%(scalerName,scalerName,filename))
         return scalerName
         
 
