@@ -50,7 +50,7 @@ dibosonHist = RooDataHist('WV_semileptonic_SM_mu_rawshape',
                           'WV_semileptonic_SM_mu_rawshape',
                           vars,
                           diboson)
-dibosonPdf = RooHistPdf('WV_semileptonic_SM_mu_shape',
+dibosonPdf = RooHistFunc('WV_semileptonic_SM_mu_shape',
                         'WV_semileptonic_SM_mu_shape',
                         varSet,
                         dibosonHist)
@@ -70,8 +70,8 @@ aTGC = RooATGCFunction('ATGC_shapescale_WWgammaZ_WV_atgc_semileptonic_mu',
 aTGCPdf = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WV_atgc_semileptonic_mu',
                                  'ATGCPdf_WV_mu',
                                  wpt,
-                                 lz,
                                  dkg,
+                                 lz,                                 
                                  dg1,
                                  dibosonPdf,
                                  '%s/ATGC_shape_coefficients.root'%basepath)

@@ -45,7 +45,7 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
                     r.RooArgList(self.modelBuilder.out.var('W_pt')),
                     self.modelBuilder.out.obj('SM_wv_semil_mu_shape_for_scale'))
         self.modelBuilder.out._import(SM_diboson_shape_dhist)        
-        self.modelBuilder.factory_('RooHistPdf::Scaling_base_pdf_%s({W_pt},DHIST_SM_wv_semil_mu_shape_for_scale)'%(scalerName))              
+        self.modelBuilder.factory_('RooHistFunc::Scaling_base_pdf_%s({W_pt},DHIST_SM_wv_semil_mu_shape_for_scale)'%(scalerName))              
         self.modelBuilder.factory_('RooATGCProcessScaling::Scaling_%s(W_pt,dkg,lZ,dg1,Scaling_base_pdf_%s,"%s")'%(scalerName,scalerName,filename))
         return scalerName
         

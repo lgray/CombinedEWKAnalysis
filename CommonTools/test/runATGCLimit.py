@@ -38,33 +38,42 @@ dibosonHist = RooDataHist('WV_atgc_semileptonic_mu',
                           vars, diboson)
 
 bkgPdf = RooHistPdf('bkgPdf', 'bkgPdf', varSet, bkgHist)
-dibosonPdf = RooHistPdf('dibosonPdf', 'dibosonPdf', varSet, dibosonHist)
+dibosonPdf = RooHistFunc('dibosonPdf', 'dibosonPdf', varSet, dibosonHist,0)
+dibosonFunc = RooHistFunc('dibosonFunc', 'dibosonPdf', varSet, dibosonHist,0)
 
 print '%s/ATGC_shape_coefficients.root'%basepath
 
 aTGC = RooATGCFunction('aTGC', 'aTGC', wpt, lz, dkg, dg1, 
                        '%s/ATGC_shape_coefficients.root'%basepath)
 
+aTGCPdfOld = RooGenericPdf('aTGCPdfOld','aTGCPdfOld','@0*@1',RooArgList(dibosonPdf,aTGC))
+
 aTGCPdf = RooATGCSemiAnalyticPdf('aTGCPdf',
                                  'aTGCPdf_WV_mu',
                                  wpt,
-                                 lz,
                                  dkg,
+                                 lz,                                 
                                  dg1,
-                                 dibosonPdf,
+                                 dibosonFunc,
                                  '%s/ATGC_shape_coefficients.root'%basepath)
 
-nbkg = theWS.factory('prod::bkg_yield(n_bkg[%f],bkg_nrm[1.,-1.,5.])' % \
+nbkg = theWS.factory('prod::bkg_yield(n_bkg[%f],bkg_nrm[1.,-1,5])' % \
                          (background.Integral()))
-ndiboson = theWS.factory('prod::diboson_yield(n_diboson[%f],diboson_nrm[1.,-1.,5.])' % \
+ndiboson = theWS.factory('prod::diboson_yield(n_diboson[%f],diboson_nrm[1.,-1,5])' % \
                              (diboson.Integral()))
+
+
+print "starting normalizations"
+print nbkg.getVal()
+print ndiboson.getVal()
 
 getattr(theWS, 'import')(data)
 getattr(theWS, 'import')(bkgPdf)
-getattr(theWS, 'import')(aTGCPdf)
+getattr(theWS, 'import')(aTGCPdfOld)
+getattr(theWS, 'import')(aTGCPdf, RooFit.RecycleConflictNodes())
 
 theWS.factory('RooExtendPdf::bkg_extended(bkgPdf,bkg_yield)')
-theWS.factory('RooExtendPdf::aTGC_extended(aTGCPdf,diboson_yield)')
+theWS.factory('RooExtendPdf::aTGC_extended(aTGCPdfOld,diboson_yield)')
 comps = RooArgList(theWS.argSet('aTGC_extended,bkg_extended'))
 total = RooAddPdf('total', 'total', comps)
 
@@ -78,12 +87,12 @@ theWS.factory('RooATGCProcessScaling::testScale(W_pt,dkg,lZ,dg1,dibosonPdf,"%s/A
 
 theWS.Print()
 
-#total_const.fitTo(data, RooFit.Constrained(), RooFit.Extended())
+total.fitTo(data, RooFit.Extended())
 
 frame = wpt.frame()
 data.plotOn(frame)
-total_const.plotOn(frame)
-total_const.plotOn(frame, RooFit.Components('bkg*'),
+total.plotOn(frame)
+total.plotOn(frame, RooFit.Components('bkg*'),
                    RooFit.LineColor(kRed),
                    RooFit.LineStyle(kDashed))
 data.plotOn(frame)
@@ -93,6 +102,9 @@ gPad.Update()
 #gPad.WaitPrimitive()
 
 poi = RooArgSet(lz, dkg)
+
+theWS.var('dkg').setVal(0.0)
+theWS.var('lZ').setVal(0.0)
 
 print theWS.function('testScale').getVal()
 
