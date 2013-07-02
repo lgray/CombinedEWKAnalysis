@@ -56,11 +56,9 @@ class AnomalousCouplingModel(PhysicsModel):
         print self.processScaling
 
     def getYieldScale(self,bin,process):
-        print process
         for prefix, model in self.processScaling.iteritems():
             print prefix, model
             if process.startswith(prefix):
-                print 'Scaling_'+model
                 return 'Scaling_'+model
         return 1
         
