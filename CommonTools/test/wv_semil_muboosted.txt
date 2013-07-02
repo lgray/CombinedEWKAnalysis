@@ -5,13 +5,13 @@ kmax *  number of nuisance parameters (sources of systematical uncertainties)
 ------------
 shapes WV_semileptonic_bkg_mu  muboosted ./mu_boosted_ws.root WV_muboosted:$PROCESS WV_muboosted:$PROCESS_$SYSTEMATIC
 shapes data_obs                muboosted ./mu_boosted_ws.root WV_muboosted:$PROCESS
-shapes WV_atgc_semileptonic_mu muboosted ./mu_boosted_ws.root WV_muboosted:ATGCPdf_WWgammaZ_$PROCESS
+shapes WWgammaZ_WV_atgc_semileptonic_mu muboosted ./mu_boosted_ws.root WV_muboosted:ATGCPdf_$PROCESS
 ------------
 bin muboosted 
 observation 3080
 ------------
 bin                         muboosted		      muboosted
-process                     WV_atgc_semileptonic_mu   WV_semileptonic_bkg_mu
+process                     WWgammaZ_WV_atgc_semileptonic_mu   WV_semileptonic_bkg_mu
 process                     0			      1		
 rate                        653.852		      2424.987	
 

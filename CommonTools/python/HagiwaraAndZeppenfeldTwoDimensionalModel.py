@@ -12,9 +12,9 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         self.channels  = ['WV_atgc_semileptonic']
         self.pois      =  ['dkg','dg1','lZ']
         self.mode      = mode
-        self.anomCoupSearchWindows = {'dkg':['-5e-1','5e-1'],
+        self.anomCoupSearchWindows = {'dkg':['-1.5e-1','1.5e-1'],
                                       'dg1':['-5e-1','5e-1'],
-                                      'lZ' :['-5e-1','5e-1']     }
+                                      'lZ' :['-3e-2','3e-2']     }
         
         self.verbose = False
 
