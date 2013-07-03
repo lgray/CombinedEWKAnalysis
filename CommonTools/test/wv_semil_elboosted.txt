@@ -1,0 +1,23 @@
+# Simple counting experiment, with one signal and a few background processes 
+imax 1  number of channels
+jmax 1  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes WV_semileptonic_bkg_el  elboosted ./el_boosted_ws.root WV_elboosted:$PROCESS WV_elboosted:$PROCESS_$SYSTEMATIC
+shapes data_obs                elboosted ./el_boosted_ws.root WV_elboosted:$PROCESS
+shapes WWgammaZ_WV_atgc_semileptonic_el elboosted ./el_boosted_ws.root WV_elboosted:ATGCPdf_$PROCESS
+------------
+bin elboosted 
+observation 2487
+------------
+bin                         elboosted		      elboosted
+process                     WWgammaZ_WV_atgc_semileptonic_el   WV_semileptonic_bkg_el
+process                     0			      1		
+rate                        539.187		      1954.827	
+
+------------
+lumi_8TeV           lnN     1.022		      1.022
+CMS_eff_e           lnN     1.02                      -
+CMS_trigger_e       lnN     1.01                      -
+elboosted_backshape shape1  -                         1.0 
+sigXSsyst           lnN     1.034                     -
