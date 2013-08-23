@@ -25,14 +25,18 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         if ( self.mode == 'dkglZ' ):
             scalerName = '%s_%s'%(process,channel)
             self.modelBuilder.out.var('dg1').setVal(0)
-            self.modelBuilder.out.var('dg1').setConstant(True)            
+            self.modelBuilder.out.var('dg1').setConstant(True)
+        elif ( self.mode == 'dg1lZ' ):
+            scalerName = '%s_%s'%(process,channel)
+            self.modelBuilder.out.var('dkg').setVal(0)
+            self.modelBuilder.out.var('dkg').setConstant(True)  
         elif ( self.mode == 'dkgdg1' ):
             scalerName = '%s_%s'%(process,channel)
             self.modelBuilder.out.var('lZ').setVal(0)
             self.modelBuilder.out.var('lZ').setConstant(True)            
         else:
             raise RuntimeError('InvalidCouplingChoice',
-                               'We can only use [dkg,lZ] and [dkg,dg1]'\
+                               'We can only use [dkg,lZ], [dg1,lZ], and [dkg,dg1]'\
                                ' as POIs right now!')
               
         f = r.TFile('%s/mu_boosted.root'%basepath,'READ')
@@ -51,4 +55,5 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         
 
 dkglZModel = HagiwaraAndZeppenfeldTwoDimensionalModel('dkglZ')
+dg1lZModel = HagiwaraAndZeppenfeldTwoDimensionalModel('dg1lZ')
 dkgdg1Model = HagiwaraAndZeppenfeldTwoDimensionalModel('dkgdg1')
