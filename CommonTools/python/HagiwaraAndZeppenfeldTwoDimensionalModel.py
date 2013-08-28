@@ -21,23 +21,8 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         self.verbose = False
 
     def buildScaling(self,process,channel):        
-        scalerName = 'bork'        
-        if ( self.mode == 'dkglZ' ):
-            scalerName = '%s_%s'%(process,channel)
-            self.modelBuilder.out.var('dg1').setVal(0)
-            self.modelBuilder.out.var('dg1').setConstant(True)
-        elif ( self.mode == 'dg1lZ' ):
-            scalerName = '%s_%s'%(process,channel)
-            self.modelBuilder.out.var('dkg').setVal(0)
-            self.modelBuilder.out.var('dkg').setConstant(True)  
-        elif ( self.mode == 'dkgdg1' ):
-            scalerName = '%s_%s'%(process,channel)
-            self.modelBuilder.out.var('lZ').setVal(0)
-            self.modelBuilder.out.var('lZ').setConstant(True)            
-        else:
-            raise RuntimeError('InvalidCouplingChoice',
-                               'We can only use [dkg,lZ], [dg1,lZ], and [dkg,dg1]'\
-                               ' as POIs right now!')
+        scalerName = '%s_%s'%(process,channel)
+        
               
         f = r.TFile('%s/mu_boosted.root'%basepath,'READ')
         SM_diboson_shape = f.Get('diboson').Clone('SM_wv_semil_mu_shape_for_scale')
@@ -51,6 +36,24 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         self.modelBuilder.out._import(SM_diboson_shape_dhist)        
         self.modelBuilder.factory_('RooHistFunc::Scaling_base_pdf_%s({W_pt},DHIST_SM_wv_semil_mu_shape_for_scale)'%(scalerName))              
         self.modelBuilder.factory_('RooATGCProcessScaling::Scaling_%s(W_pt,dkg,lZ,dg1,Scaling_base_pdf_%s,"%s")'%(scalerName,scalerName,filename))
+
+        if ( self.mode == 'dkglZ' ):
+            self.modelBuilder.out.function('Scaling_%s'%scalerName).setLimitType(0)
+            self.modelBuilder.out.var('dg1').setVal(0)
+            self.modelBuilder.out.var('dg1').setConstant(True)
+        elif ( self.mode == 'dg1lZ' ):
+            self.modelBuilder.out.function('Scaling_%s'%scalerName).setLimitType(1)
+            self.modelBuilder.out.var('dkg').setVal(0)
+            self.modelBuilder.out.var('dkg').setConstant(True)  
+        elif ( self.mode == 'dkgdg1' ):
+            self.modelBuilder.out.function('Scaling_%s'%scalerName).setLimitType(2)
+            self.modelBuilder.out.var('lZ').setVal(0)
+            self.modelBuilder.out.var('lZ').setConstant(True)            
+        else:
+            raise RuntimeError('InvalidCouplingChoice',
+                               'We can only use [dkg,lZ], [dg1,lZ], and [dkg,dg1]'\
+                               ' as POIs right now!')
+        
         return scalerName
         
 

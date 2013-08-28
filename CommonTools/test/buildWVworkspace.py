@@ -5,13 +5,23 @@ import sys
 
 from ROOT import *
 
-lType = sys.argv[1] 
+lType = sys.argv[1]
 codename = ""
+planeID = sys.argv[2]
 
+norm_sig_sm = -1
+norm_bkg = -1
+norm_obs = -1
 if( lType == "muon" ) :
     codename = "mu"
+    norm_sig_sm = 653.852
+    norm_bkg = 2424.987
+    norm_obs = 3080
 elif( lType == "electron" ):
     codename = "el"
+    norm_sig_sm = 539.187
+    norm_bkg = 1954.827
+    norm_obs = 2487
 else:
     raise RuntimeError('InvalidLepton','You may only choose between "muon" and "electron" channels.')
 
@@ -78,7 +88,21 @@ aTGC = RooATGCFunction('ATGC_shapescale_WWgammaZ_WV_atgc_semileptonic_%s'%codena
                        dg1, 
                        '%s/ATGC_shape_coefficients.root'%basepath)
 
+limtype = -1
 
+print 'setting up for %s plane!'%planeID
+if ( planeID == 'dkglZ' ):
+    limtype = 0
+elif ( planeID == 'dg1lZ' ):
+    limtype = 1
+elif ( planeID == 'dkgdg1'):
+    limtype = 2
+else:
+    raise RuntimeError('InvalidCouplingChoice',
+                       'We can only use [dkg,lZ], [dg1,lZ], and [dkg,dg1]'\
+                       ' as POIs right now!')
+
+print limtype
 
 aTGCPdf = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WV_atgc_semileptonic_%s'%codename,
                                  'ATGCPdf_WV_%s'%codename,
@@ -87,7 +111,9 @@ aTGCPdf = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WV_atgc_semileptonic_%s'%code
                                  lz,                                 
                                  dg1,
                                  dibosonPdf,
-                                 '%s/ATGC_shape_coefficients.root'%basepath)
+                                 '%s/ATGC_shape_coefficients.root'%basepath,
+                                 limtype)
+
 
 getattr(theWS, 'import')(data)
 getattr(theWS, 'import')(bkgHist)
@@ -97,6 +123,39 @@ getattr(theWS, 'import')(aTGCPdf)
 
 theWS.Print()
 
-fout = TFile('%s_boosted_ws.root'%codename, 'recreate')
+fout = TFile('%s_boosted_%s_ws.root'%(codename,planeID), 'recreate')
 theWS.Write()
 fout.Close()
+
+### make the card for this channel and plane ID
+card = """
+# Simple counting experiment, with one signal and a few background processes 
+imax 1  number of channels
+jmax 1  number of backgrounds
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+------------
+shapes WV_semileptonic_bkg_{codename}  {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:$PROCESS WV_{codename}boosted:$PROCESS_$SYSTEMATIC
+shapes data_obs                {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:$PROCESS
+shapes WWgammaZ_WV_atgc_semileptonic_{codename} {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:ATGCPdf_$PROCESS
+------------
+bin {codename}boosted 
+observation {norm_obs}
+------------
+bin                         {codename}boosted		      {codename}boosted
+process                     WWgammaZ_WV_atgc_semileptonic_{codename}   WV_semileptonic_bkg_{codename}
+process                     0			      1		
+rate                        {norm_sig_sm}		      {norm_bkg}	
+
+------------
+lumi_8TeV           lnN     1.022		      1.022
+CMS_eff_{codename[0]}           lnN     1.02                      -
+CMS_trigger_{codename[0]}       lnN     1.01                      -
+{codename}boosted_backshape shape1  -                         1.0 
+sigXSsyst           lnN     1.034                     -
+""".format(codename=codename,planeID=planeID,norm_sig_sm=norm_sig_sm,norm_bkg=norm_bkg,norm_obs=norm_obs)
+
+print card
+
+cardfile = open('wv_semil_%sboosted_%s.txt'%(codename,planeID),'w')
+cardfile.write(card)
+cardfile.close
