@@ -14,14 +14,8 @@ norm_bkg = -1
 norm_obs = -1
 if( lType == "muon" ) :
     codename = "mu"
-    norm_sig_sm = 653.852
-    norm_bkg = 2424.987
-    norm_obs = 3080
 elif( lType == "electron" ):
     codename = "el"
-    norm_sig_sm = 539.187
-    norm_bkg = 1954.827
-    norm_obs = 2487
 else:
     raise RuntimeError('InvalidLepton','You may only choose between "muon" and "electron" channels.')
 
@@ -35,7 +29,11 @@ background_backshapeDown = f.Get('background_%sboosted_backshapeDown'%codename)
 data_obs = f.Get('data_obs')
 diboson = f.Get('diboson')
 
-background.Add(diboson, -1.)
+#background.Add(diboson, -1.)
+
+norm_sig_sm = diboson.Integral()
+norm_bkg = background.Integral()
+norm_obs = data_obs.Integral()
 
 theWS = RooWorkspace('WV_%sboosted'%codename, 'WV_%sboosted'%codename)
 
@@ -46,8 +44,8 @@ wpt.setBins(data_obs.GetNbinsX())
 lz = theWS.factory('lZ[0., -1., 1.]')
 # lz = theWS.factory('lZ[0.]')
 lz.setConstant(False)
-dkg = theWS.factory('dkg[0., -0.5, 0.5]')
-dg1 = theWS.factory('dg1[0.]')
+dkg = theWS.factory('dkg[0.,-0.15, 0.15]')
+dg1 = theWS.factory('dg1[0.,-0.1,0.1]')
 
 
 vars = RooArgList(wpt)
@@ -147,7 +145,7 @@ process                     0			      1
 rate                        {norm_sig_sm}		      {norm_bkg}	
 
 ------------
-lumi_8TeV           lnN     1.022		      1.022
+lumi_8TeV           lnN     1.044		      -
 CMS_eff_{codename[0]}           lnN     1.02                      -
 CMS_trigger_{codename[0]}       lnN     1.01                      -
 {codename}boosted_backshape shape1  -                         1.0 
