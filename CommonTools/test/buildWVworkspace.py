@@ -30,7 +30,13 @@ data_obs = f.Get('data_obs')
 diboson_ww = f.Get('ww')
 diboson_wz = f.Get('wz')
 
-#background.Add(diboson, -1.)
+background.Add(diboson_ww, -1.)
+background.Add(diboson_wz, -1.)
+background_backshapeUp.Add(diboson_ww, -1.)
+background_backshapeUp.Add(diboson_wz, -1.)
+background_backshapeDown.Add(diboson_ww, -1.)
+background_backshapeDown.Add(diboson_wz, -1.)
+
 
 norm_sig_ww_sm = diboson_ww.Integral()
 norm_sig_wz_sm = diboson_wz.Integral()
