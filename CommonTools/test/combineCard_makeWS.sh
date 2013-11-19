@@ -2,6 +2,10 @@
 
 limType=$1
 
+python split_atgc_coefs.py ../data/WV_semileptonic/ATGC_shape_coefficients.root
+cp ww_ATGC_shape_coefficients.root ../data/WV_semileptonic/
+cp wz_ATGC_shape_coefficients.root ../data/WV_semileptonic/
+
 python buildWVworkspace.py muon ${limType}
 python buildWVworkspace.py electron ${limType}
 
