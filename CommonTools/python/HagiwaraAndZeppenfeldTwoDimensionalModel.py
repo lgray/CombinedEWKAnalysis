@@ -18,7 +18,7 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         self.pois      =  ['dkg','dg1','lZ']
         self.mode      = mode
         self.anomCoupSearchWindows = {'dkg':['-1.5e-1','1.5e-1'],
-                                      'dg1':['-1.5e-1','1.5e-1'],
+                                      'dg1':['-1.0e-1','1.0e-1'],
                                       'lZ' :['-3e-2','3e-2']     }
 
         self.nameMapParents = {'WZ':'wz','WW':'ww'}

@@ -12,7 +12,7 @@ limit = file.Get('limit')
 nEntries = limit.GetEntries()-1
 
 histo = TH1F('LLHscan','',nEntries,minmax[0],minmax[1])
-limit.Draw("dkg >> LLHscan","deltaNLL",'goff')
+limit.Draw("%s >> LLHscan"%parm,"deltaNLL",'goff')
 
 minBin = histo.GetMinimumBin()
 minBinCenter = histo.GetBinCenter(minBin)
@@ -53,6 +53,8 @@ for i in xrange(nEntries):
         lastBelowErr95 = False
         lastAboveErr95 = True
 file.Close()
+
+print bounds95
 
 boundstext68 = ['[%.3g,%.3g]'%(b[0],b[1]) for b in bounds68]
 boundstext95 = ['[%.3g,%.3g]'%(b[0],b[1]) for b in bounds95]
