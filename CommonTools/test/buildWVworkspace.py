@@ -14,9 +14,9 @@ norm_sig_sm = -1
 norm_bkg = -1
 norm_obs = -1
 if( lType == "muon" ) :
-    codename = "mu"
+    codename = "muboosted"
 elif( lType == "electron" ):
-    codename = "el"
+    codename = "elboosted"
 else:
     raise RuntimeError('InvalidLepton','You may only choose between "muon" and "electron" channels.')
 
@@ -28,11 +28,11 @@ double_ratio_error = f_errors.Get('doubleRatio_dk05').Clone('doubleRatio_dk05_mi
 double_ratio_error.SetDirectory(0)
 f_errors.Close()
 
-f = TFile('%s/%s_boosted.root'%(basepath,codename))
+f = TFile('%s/%s.root'%(basepath,codename))
 
 background = f.Get('background')
-background_backshapeUp = f.Get('background_%sboosted_backshapeUp'%codename)
-background_backshapeDown = f.Get('background_%sboosted_backshapeDown'%codename)
+background_backshapeUp = f.Get('background_%s_backshapeUp'%codename)
+background_backshapeDown = f.Get('background_%s_backshapeDown'%codename)
 data_obs = f.Get('data_obs')
 diboson_ww = f.Get('ww')
 diboson_wz = f.Get('wz')
@@ -51,12 +51,13 @@ for i in xrange(diboson_ww.GetNbinsX()):
     diboson_ww_sigshapeUp.SetBinContent(i+1,binContent*errup)
     diboson_ww_sigshapeDown.SetBinContent(i+1,binContent*errdown)
 
-background.Add(diboson_ww, -1.)
-background.Add(diboson_wz, -1.)
-background_backshapeUp.Add(diboson_ww, -1.)
-background_backshapeUp.Add(diboson_wz, -1.)
-background_backshapeDown.Add(diboson_ww, -1.)
-background_backshapeDown.Add(diboson_wz, -1.)
+if False: #maybe ?
+    background.Add(diboson_ww, -1.)
+    background.Add(diboson_wz, -1.)
+    background_backshapeUp.Add(diboson_ww, -1.)
+    background_backshapeUp.Add(diboson_wz, -1.)
+    background_backshapeDown.Add(diboson_ww, -1.)
+    background_backshapeDown.Add(diboson_wz, -1.)
 
 
 norm_sig_ww_sm = diboson_ww.Integral()
@@ -64,7 +65,7 @@ norm_sig_wz_sm = diboson_wz.Integral()
 norm_bkg = background.Integral()
 norm_obs = data_obs.Integral()
 
-theWS = RooWorkspace('WV_%sboosted'%codename, 'WV_%sboosted'%codename)
+theWS = RooWorkspace('WV_%s'%codename, 'WV_%s'%codename)
 
 wpt = theWS.factory('W_pt[%f,%f]' % (data_obs.GetBinLowEdge(1), 
                                      data_obs.GetBinLowEdge(data_obs.GetNbinsX())+data_obs.GetBinWidth(data_obs.GetNbinsX())))
@@ -80,55 +81,53 @@ dg1 = theWS.factory('dg1[0.,-0.1,0.1]')
 vars = RooArgList(wpt)
 varSet = RooArgSet(wpt)
 
-data = RooDataHist('data_obs', 'data_obs_WV_%s'%codename, vars, data_obs)
-bkgHist = RooDataHist('WV_semileptonic_bkg_%s'%codename,
-                      'WV_semileptonic_bkg_%s'%codename,
+data = RooDataHist('data_obs_WVsemileptonic_%s'%codename, 'data_obs_WVsemileptonic_%s'%codename, vars, data_obs)
+bkgHist = RooDataHist('bkg_%s_WVsemileptonic_%s'%(codename,codename),
+                      'bkg_%s_WVsemileptonic_%s'%(codename,codename),
                       vars,
                       background)
-bkgHist_systUp = RooDataHist('WV_semileptonic_bkg_%s_%sboosted_backshapeUp'%(codename,codename),
-                             'WV_semileptonic_bkg_%s_%sboosted_backshapeUp'%(codename,codename),
+bkgHist_systUp = RooDataHist('bkg_%s_WVsemileptonic_%s_backshapeUp'%(codename,codename),
+                             'bkg_%s_WVsemileptonic_%s_backshapeUp'%(codename,codename),
                              vars,
                              background_backshapeUp)
-bkgHist_systDown = RooDataHist('WV_semileptonic_bkg_%s_%sboosted_backshapeDown'%(codename,
-                                                                                 codename),
-                               'WV_semileptonic_bkg_%s_%sboosted_backshapeDown'%(codename,
-                                                                                 codename),
+bkgHist_systDown = RooDataHist('bkg_%s_WVsemileptonic_%s_backshapeDown'%(codename,codename),
+                               'bkg_%s_WVsemileptonic_%s_backshapeDown'%(codename,codename),
                                vars,
                                background_backshapeDown)
 
-wwHist = RooDataHist('WW_semileptonic_SM_%s_rawshape'%codename,
-                     'WW_semileptonic_SM_%s_rawshape'%codename,
+wwHist = RooDataHist('WW_SM_semileptonic_%s_rawshape'%codename,
+                     'WW_SM_semileptonic_%s_rawshape'%codename,
                      vars,
                      diboson_ww)
-wwPdf = RooHistFunc('WW_semileptonic_SM_%s_shape'%codename,
-                    'WW_semileptonic_SM_%s_shape'%codename,
+wwPdf = RooHistFunc('WW_SM_semileptonic_%s_shape'%codename,
+                    'WW_SM_semileptonic_%s_shape'%codename,
                     varSet,
                     wwHist)
 
-wwHist_up = RooDataHist('WW_semileptonic_SM_sigShapeUp_%s_rawshape'%codename,
-                        'WW_semileptonic_SM_sigShapeUp_%s_rawshape'%codename,
+wwHist_up = RooDataHist('WW_SM_semileptonic_%s_sigShapeUp_rawshape'%codename,
+                        'WW_SM_semileptonic_%s_sigShapeUp_rawshape'%codename,
                         vars,
                         diboson_ww_sigshapeUp)
-wwPdf_up = RooHistFunc('WW_semileptonic_SM_sigShapeUp_%s_shape'%codename,
-                       'WW_semileptonic_SM_sigShapeUp_%s_shape'%codename,
+wwPdf_up = RooHistFunc('WW_SM_semileptonic_%s_sigShapeUp_shape'%codename,
+                       'WW_SM_semileptonic_%s_sigShapeUp_shape'%codename,
                        varSet,
                        wwHist_up)
 
-wwHist_down = RooDataHist('WW_semileptonic_SM_sigShapeDown_%s_rawshape'%codename,
-                          'WW_semileptonic_SM_sigShapeDown_%s_rawshape'%codename,
+wwHist_down = RooDataHist('WW_SM_semileptonic_%s_sigShapeDown_rawshape'%codename,
+                          'WW_SM_semileptonic_%s_sigShapeDown_rawshape'%codename,
                           vars,
                           diboson_ww_sigshapeDown)
-wwPdf_down = RooHistFunc('WW_semileptonic_SM_sigShapeDown_%s_shape'%codename,
-                         'WW_semileptonic_SM_sigShapeDown_%s_shape'%codename,
+wwPdf_down = RooHistFunc('WW_SM_semileptonic_%s_sigShapeDown_shape'%codename,
+                         'WW_SM_semileptonic_%s_sigShapeDown_shape'%codename,
                          varSet,
                          wwHist_down)
 
-wzHist = RooDataHist('WZ_semileptonic_SM_%s_rawshape'%codename,
-                     'WZ_semileptonic_SM_%s_rawshape'%codename,
+wzHist = RooDataHist('WZ_SM_semileptonic_%s_rawshape'%codename,
+                     'WZ_SM_semileptonic_%s_rawshape'%codename,
                      vars,
                      diboson_wz)
-wzPdf = RooHistFunc('WZ_semileptonic_SM_%s_shape'%codename,
-                    'WZ_semileptonic_SM_%s_shape'%codename,
+wzPdf = RooHistFunc('WZ_SM_semileptonic_%s_shape'%codename,
+                    'WZ_SM_semileptonic_%s_shape'%codename,
                     varSet,
                     wzHist)
 
@@ -164,7 +163,7 @@ else:
 
 print limtype
 
-aTGCPdf_ww = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_atgc_semileptonic_%s__'%codename,
+aTGCPdf_ww = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_WVsemileptonic_%s__'%codename,
                                     'ATGCPdf_WW_%s'%codename,
                                     wpt,
                                     dkg,
@@ -174,7 +173,7 @@ aTGCPdf_ww = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_atgc_semileptonic_%s__'
                                     '%s/ww_ATGC_shape_coefficients.root'%basepath,
                                     limtype)
 
-aTGCPdf_ww_up = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_atgc_semileptonic_%s_sigShapeUp'%codename,
+aTGCPdf_ww_up = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_WVsemileptonic_%s_sigShapeUp'%codename,
                                        'ATGCPdf_WW_%s'%codename,
                                        wpt,
                                        dkg,
@@ -184,7 +183,7 @@ aTGCPdf_ww_up = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_atgc_semileptonic_%s
                                        '%s/ww_ATGC_shape_coefficients.root'%basepath,
                                        limtype)
 
-aTGCPdf_ww_down = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_atgc_semileptonic_%s_sigShapeDown'%codename,
+aTGCPdf_ww_down = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_WVsemileptonic_%s_sigShapeDown'%codename,
                                          'ATGCPdf_WW_%s'%codename,
                                          wpt,
                                          dkg,
@@ -194,7 +193,7 @@ aTGCPdf_ww_down = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WW_atgc_semileptonic_
                                          '%s/ww_ATGC_shape_coefficients.root'%basepath,
                                          limtype)
 
-aTGCPdf_wz = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WZ_atgc_semileptonic_%s'%codename,
+aTGCPdf_wz = RooATGCSemiAnalyticPdf('ATGCPdf_WWgammaZ_WZ_WVsemileptonic_%s'%codename,
                                     'ATGCPdf_WZ_%s'%codename,
                                     wpt,                                    
                                     dkg,
@@ -209,14 +208,18 @@ getattr(theWS, 'import')(data)
 getattr(theWS, 'import')(bkgHist)
 getattr(theWS, 'import')(bkgHist_systUp)
 getattr(theWS, 'import')(bkgHist_systDown)
+getattr(theWS, 'import')(wwHist)
 getattr(theWS, 'import')(aTGCPdf_ww)
+getattr(theWS, 'import')(wwHist_up)
 getattr(theWS, 'import')(aTGCPdf_ww_up)
+getattr(theWS, 'import')(wwHist_down)
 getattr(theWS, 'import')(aTGCPdf_ww_down)
+getattr(theWS, 'import')(wzHist)
 getattr(theWS, 'import')(aTGCPdf_wz)
 
 theWS.Print()
 
-fout = TFile('%s_boosted_%s_ws.root'%(codename,planeID), 'recreate')
+fout = TFile('WVsemileptonic_%s_%s_ws.root'%(codename,planeID), 'recreate')
 theWS.Write()
 fout.Close()
 
@@ -227,25 +230,25 @@ imax 1  number of channels
 jmax *  number of backgrounds
 kmax *  number of nuisance parameters (sources of systematical uncertainties)
 ------------
-shapes WV_semileptonic_bkg_{codename}  {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:$PROCESS WV_{codename}boosted:$PROCESS_$SYSTEMATIC
-shapes data_obs                {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:$PROCESS
-shapes WWgammaZ_WZ_atgc_semileptonic_{codename} {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:ATGCPdf_$PROCESS
-shapes WWgammaZ_WW_atgc_semileptonic_{codename}_{sig_syst} {codename}boosted ./{codename}_boosted_{planeID}_ws.root WV_{codename}boosted:ATGCPdf_$PROCESS
+shapes bkg_{codename} WVsemileptonic_{codename} ./WVsemileptonic_{codename}_{planeID}_ws.root WV_{codename}:$PROCESS_$CHANNEL WV_{codename}:$PROCESS_$SYSTEMATIC
+shapes data_obs       WVsemileptonic_{codename} ./WVsemileptonic_{codename}_{planeID}_ws.root WV_{codename}:$PROCESS_$CHANNEL
+shapes WWgammaZ_WZ    WVsemileptonic_{codename} ./WVsemileptonic_{codename}_{planeID}_ws.root WV_{codename}:ATGCPdf_$PROCESS_$CHANNEL
+shapes WWgammaZ_WW    WVsemileptonic_{codename} ./WVsemileptonic_{codename}_{planeID}_ws.root WV_{codename}:ATGCPdf_$PROCESS_$CHANNEL_{sig_syst}
 ------------
-bin {codename}boosted 
+bin WVsemileptonic_{codename} 
 observation {norm_obs}
 ------------
-bin                         {codename}boosted		             {codename}boosted		                {codename}boosted
-process                     WWgammaZ_WW_atgc_semileptonic_{codename}_{sig_syst} WWgammaZ_WZ_atgc_semileptonic_{codename}   WV_semileptonic_bkg_{codename}
-process                     -1			                     0			                        1		
-rate                        {norm_sig_ww_sm}		             {norm_sig_wz_sm}		                {norm_bkg}	
+bin                         WVsemileptonic_{codename}     WVsemileptonic_{codename}     WVsemileptonic_{codename}
+process                     WWgammaZ_WW                   WWgammaZ_WZ                   bkg_{codename}
+process                     -1			          0			        1		
+rate                        {norm_sig_ww_sm}		  {norm_sig_wz_sm}		{norm_bkg}	
 
 ------------
-lumi_8TeV           lnN     1.044		      1.044		      -
+lumi_8TeV                       lnN     1.026    		  1.026  		    -
 CMS_eff_{codename[0]}           lnN     1.02                      1.02                      -
 CMS_trigger_{codename[0]}       lnN     1.01                      1.01                      -
-{codename}boosted_backshape shape1  -                         -                         1.0 
-sigXSsyst           lnN     1.034                     1.034                     -
+WVsemileptonic_{codename}_backshape            shape1  -                         -                         1.0 
+sigXSsyst                       lnN     1.034                     1.034                     -
 """.format(codename=codename,planeID=planeID,
            norm_sig_ww_sm=norm_sig_ww_sm,
            norm_sig_wz_sm=norm_sig_wz_sm,
@@ -254,6 +257,6 @@ sigXSsyst           lnN     1.034                     1.034                     
 
 print card
 
-cardfile = open('wv_semil_%sboosted_%s_%s.txt'%(codename,planeID,sig_syst),'w')
+cardfile = open('wv_semil_%s_%s_%s.txt'%(codename,planeID,sig_syst),'w')
 cardfile.write(card)
 cardfile.close()

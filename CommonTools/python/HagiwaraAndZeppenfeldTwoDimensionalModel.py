@@ -43,7 +43,7 @@ class HagiwaraAndZeppenfeldTwoDimensionalModel(AnomalousCouplingModel):
         filename = '%s/%s_ATGC_shape_coefficients.root'%(basepath,parent)
         
         
-        f = r.TFile('%s/%s_boosted.root'%(basepath,child),'READ')
+        f = r.TFile('%s/%sboosted.root'%(basepath,child),'READ')
         SM_diboson_shape = f.Get(parent).Clone('SM_%s_semil_%s_shape_for_scale'%(parent,child))
         SM_diboson_shape.SetDirectory(0)
         f.Close()
